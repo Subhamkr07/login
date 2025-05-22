@@ -15,6 +15,7 @@
             background: linear-gradient(135deg, #74ebd5 0%, #9face6 100%); /* Soft gradient background */
             margin: 0;
             color: #333;
+            overflow: hidden; /* Prevent scroll when popup is active */
         }
 
         .login-container {
@@ -26,6 +27,8 @@
             max-width: 420px; /* Slightly wider for better appearance */
             text-align: center;
             animation: fadeIn 1s ease-out; /* Simple fade-in animation */
+            position: relative;
+            z-index: 1;
         }
 
         @keyframes fadeIn {
@@ -104,6 +107,7 @@
             text-decoration: none;
             margin: 0 10px;
             transition: color 0.3s ease;
+            cursor: pointer; /* To indicate it's clickable */
         }
 
         .links a:hover {
@@ -131,6 +135,180 @@
             color: #721c24;
             border: 1px solid #f5c6cb;
         }
+
+        /* --- Global Popup Styles --- */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0s, opacity 0.3s ease;
+        }
+
+        .overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .popup-content {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+            width: 100%;
+            max-width: 480px; /* Wider for more fields */
+            text-align: center;
+            position: relative;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .overlay.active .popup-content {
+            transform: scale(1);
+        }
+
+        .popup-content h3 {
+            margin-bottom: 30px;
+            color: #333;
+            font-size: 1.8em;
+            font-weight: 700;
+        }
+
+        .popup-content .input-group {
+            margin-bottom: 20px; /* Adjust spacing */
+        }
+
+        .popup-content .input-group input[type="text"],
+        .popup-content .input-group input[type="email"],
+        .popup-content .input-group input[type="tel"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #c2c2c2;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 1.05em;
+        }
+
+        .checkbox-group {
+            margin-top: 25px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .popup-content button[type="submit"],
+        .popup-content button { /* General button style for popups */
+            margin-top: 15px;
+            padding: 15px;
+            font-size: 1.2em;
+            width: 100%;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .popup-content button:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        .close-button {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 2em;
+            color: #aaa;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .close-button:hover {
+            color: #333;
+        }
+
+        /* Specific styles for Forgot Password */
+        #forgotPasswordPopup .content {
+            text-align: left;
+        }
+
+        #forgotPasswordPopup p {
+            margin-bottom: 15px;
+            line-height: 1.5;
+            font-size: 1.05em;
+        }
+
+        #forgotPasswordPopup .clickable-link {
+            color: #007bff;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        #forgotPasswordPopup .timer {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #dc3545; /* Red for timer */
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        #credentialsPopup {
+            max-width: 550px; /* Wider for credentials display */
+            padding: 50px;
+        }
+
+        #credentialsPopup h3 {
+            color: #28a745; /* Green for success */
+            margin-bottom: 25px;
+        }
+
+        #credentialsPopup .credentials-info {
+            background-color: #e2f0d9;
+            border: 1px solid #c3e6cb;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+            text-align: left;
+        }
+
+        #credentialsPopup .credentials-info p {
+            margin: 8px 0;
+        }
+
+        #credentialsPopup .credentials-info strong {
+            color: #155724;
+        }
+
+        #credentialsPopup .action-button {
+            background-color: #6c757d; /* Gray for redirect button */
+            margin-top: 10px;
+        }
+
+        #credentialsPopup .action-button:hover {
+            background-color: #5a6268;
+        }
     </style>
 </head>
 <body>
@@ -149,27 +327,102 @@
             <button type="submit">Login</button>
             <div id="loginMessage" class="message"></div>
             <div class="links">
-                <a href="#">Forgot Password?</a>
+                <a href="#" id="forgotPasswordLink">Forgot Password?</a>
                 <span>&bull;</span>
-                <a href="#">Create Account</a>
+                <a href="#" id="createAccountLink">Create Account</a>
             </div>
         </form>
     </div>
 
+    <div class="overlay" id="registrationOverlay">
+        <div class="popup-content">
+            <span class="close-button" id="closeRegistrationPopup">&times;</span>
+            <h3>Create Your Account</h3>
+            <form id="registrationForm">
+                <div class="input-group">
+                    <label for="regName">Full Name</label>
+                    <input type="text" id="regName" name="name" required placeholder="Min. 5 characters">
+                </div>
+                <div class="input-group">
+                    <label for="regPhone">Phone Number</label>
+                    <input type="tel" id="regPhone" name="phone" required placeholder="10 digits">
+                </div>
+                <div class="input-group">
+                    <label for="regEmail">Email Address</label>
+                    <input type="email" id="regEmail" name="email" required placeholder="e.g., your@example.com">
+                </div>
+                <div class="input-group">
+                    <label for="regAadhar">Aadhar Number</label>
+                    <input type="text" id="regAadhar" name="aadhar" required placeholder="12 digits">
+                </div>
+                <div class="input-group">
+                    <label for="regPan">PAN Card Number</label>
+                    <input type="text" id="regPan" name="pan" required placeholder="10 characters (e.g., ABCDE1234F)">
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="termsAccepted" required>
+                    <label for="termsAccepted">By clicking, you accept our <a href="#" style="margin:0; text-decoration: underline;">terms and conditions</a>.</label>
+                </div>
+                <button type="submit">Create Account</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="overlay" id="forgotPasswordOverlay">
+        <div class="popup-content" id="forgotPasswordPopup">
+            <span class="close-button" id="closeForgotPasswordPopup">&times;</span>
+            <h3>Forgot Password?</h3>
+            <div id="forgotPasswordIntro" class="content">
+                <p>Answer two security questions to reset your password.</p>
+                <p>If you are unable to answer, please <a href="#" class="clickable-link" id="forgotToCreateAccount">create a new account</a>.</p>
+                <button id="startQuestionsBtn">Start Questions</button>
+            </div>
+
+            <form id="questionForm" style="display: none;">
+                <div class="content">
+                    <p id="questionText"></p>
+                    <div class="input-group">
+                        <label for="answerInput">Your Answer:</label>
+                        <input type="text" id="answerInput" required>
+                    </div>
+                    <div class="timer">Time Left: <span id="timerDisplay">30</span>s</div>
+                    <button type="submit" id="submitAnswerBtn">Submit Answer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="overlay" id="credentialsOverlay">
+        <div class="popup-content" id="credentialsPopup">
+            <span class="close-button" id="closeCredentialsPopup">&times;</span>
+            <h3>You Successfully Cracked a UPSC Examination!</h3>
+            <p style="font-size: 1.1em; margin-bottom: 25px;">Click below to see your login email and password.</p>
+            <button id="showCredentialsBtn">Click Here to Reveal</button>
+
+            <div id="revealedCredentials" style="display: none;">
+                <div class="credentials-info">
+                    <p><strong>Email ID:</strong> <span id="displayEmail"></span></p>
+                    <p><strong>Password:</strong> <span id="displayPassword"></span></p>
+                </div>
+                <button id="goToLoginWithCredentials" class="action-button">Go to Login Page</button>
+            </div>
+        </div>
+    </div>
+
+
     <script>
+        // --- Login Form Logic ---
         document.getElementById('loginForm').addEventListener('submit', function(event) {
-            event.preventDefault(); // Default form submission ko roko
+            event.preventDefault();
 
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const messageDiv = document.getElementById('loginMessage');
 
-            // Message div ko reset karein
             messageDiv.textContent = '';
-            messageDiv.className = 'message'; // Classes remove karein
-            messageDiv.style.display = 'none'; // Message ko hide karein
+            messageDiv.className = 'message';
+            messageDiv.style.display = 'none';
 
-            // Basic client-side validation for empty fields
             if (email === '' || password === '') {
                 messageDiv.classList.add('error');
                 messageDiv.textContent = 'Please enter both your email and password.';
@@ -177,32 +430,251 @@
                 return;
             }
 
-            // --- Server-side validation (simulated for demonstration) ---
-            // Real world mein, yahan par aap ek API call karenge
-            // apne backend server ko email aur password bhejkar.
-            // Server database mein credentials check karega aur response dega.
-
-            // Updated Dummy credentials for frontend testing
             const validEmail = 'sk@shubham.gov.in';
-            const validPassword = 'securepassword'; // Purana password wahi rakha gaya hai
+            const validPassword = 'securepassword';
 
             if (email === validEmail && password === validPassword) {
                 messageDiv.classList.add('success');
                 messageDiv.textContent = 'Login successful! Redirecting to your website...';
                 messageDiv.style.display = 'block';
 
-                // --- REDIRECTION CODE ---
-                // User ko https://sites.google.com/view/subham7 par redirect karein
                 setTimeout(() => {
                     window.location.href = 'https://sites.google.com/view/subham7';
-                }, 1500); // 1.5 second ke baad redirect
-                // -------------------------
+                }, 1500);
 
             } else {
                 messageDiv.classList.add('error');
                 messageDiv.textContent = 'Invalid email or password. Please try again.';
                 messageDiv.style.display = 'block';
             }
+        });
+
+        // --- Registration Popup Logic ---
+        const createAccountLink = document.getElementById('createAccountLink');
+        const registrationOverlay = document.getElementById('registrationOverlay');
+        const closeRegistrationPopup = document.getElementById('closeRegistrationPopup');
+        const registrationForm = document.getElementById('registrationForm');
+
+        createAccountLink.addEventListener('click', function(event) {
+            event.preventDefault();
+            registrationOverlay.classList.add('active');
+            // Hide other popups if active
+            forgotPasswordOverlay.classList.remove('active');
+            credentialsOverlay.classList.remove('active');
+        });
+
+        closeRegistrationPopup.addEventListener('click', function() {
+            registrationOverlay.classList.remove('active');
+            registrationForm.reset();
+        });
+
+        registrationOverlay.addEventListener('click', function(event) {
+            if (event.target === registrationOverlay) {
+                registrationOverlay.classList.remove('active');
+                registrationForm.reset();
+            }
+        });
+
+        registrationForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const name = document.getElementById('regName').value.trim();
+            const phone = document.getElementById('regPhone').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const aadhar = document.getElementById('regAadhar').value.trim();
+            const pan = document.getElementById('regPan').value.trim();
+            const termsAccepted = document.getElementById('termsAccepted').checked;
+
+            let isValid = true;
+            let errorMessage = '';
+
+            if (name.length < 5) {
+                isValid = false;
+                errorMessage += '• Full Name must be at least 5 characters long.\n';
+            }
+            if (!/^\d{10}$/.test(phone)) {
+                isValid = false;
+                errorMessage += '• Phone Number must be 10 digits.\n';
+            }
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                isValid = false;
+                errorMessage += '• Invalid Email Address format.\n';
+            }
+            if (!/^\d{12}$/.test(aadhar)) {
+                isValid = false;
+                errorMessage += '• Aadhar Number must be 12 digits.\n';
+            }
+            // PAN validation (10 alphanumeric or 12 any characters as per previous discussion)
+            if (!(/^[A-Z0-9]{10}$/i.test(pan) || /^\d{12}$/.test(pan))) {
+                isValid = false;
+                errorMessage += '• PAN Card Number must be 10 alphanumeric or 12 digits.\n';
+            }
+            if (!termsAccepted) {
+                isValid = false;
+                errorMessage += '• You must accept the Terms and Conditions.\n';
+            }
+
+            if (isValid) {
+                alert('Your account is successfully created! To activate, contact Shubham.');
+                registrationOverlay.classList.remove('active');
+                registrationForm.reset();
+            } else {
+                alert('Registration Error:\n' + errorMessage);
+            }
+        });
+
+        // --- Forgot Password Logic ---
+        const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+        const forgotPasswordOverlay = document.getElementById('forgotPasswordOverlay');
+        const closeForgotPasswordPopup = document.getElementById('closeForgotPasswordPopup');
+        const forgotPasswordIntro = document.getElementById('forgotPasswordIntro');
+        const startQuestionsBtn = document.getElementById('startQuestionsBtn');
+        const questionForm = document.getElementById('questionForm');
+        const questionText = document.getElementById('questionText');
+        const answerInput = document.getElementById('answerInput');
+        const timerDisplay = document.getElementById('timerDisplay');
+        const submitAnswerBtn = document.getElementById('submitAnswerBtn');
+        const forgotToCreateAccount = document.getElementById('forgotToCreateAccount');
+
+        const credentialsOverlay = document.getElementById('credentialsOverlay');
+        const closeCredentialsPopup = document.getElementById('closeCredentialsPopup');
+        const showCredentialsBtn = document.getElementById('showCredentialsBtn');
+        const revealedCredentials = document.getElementById('revealedCredentials');
+        const displayEmail = document.getElementById('displayEmail');
+        const displayPassword = document.getElementById('displayPassword');
+        const goToLoginWithCredentials = document.getElementById('goToLoginWithCredentials');
+
+        let currentQuestion = 0;
+        let timer;
+        const questions = [
+            {
+                question: "What is the name of the website owner?",
+                answer: "shubham"
+            },
+            {
+                question: "What is the favourite IPL team of Shubham?",
+                answer: "csk"
+            }
+        ];
+
+        forgotPasswordLink.addEventListener('click', function(event) {
+            event.preventDefault();
+            forgotPasswordOverlay.classList.add('active');
+            // Hide other popups if active
+            registrationOverlay.classList.remove('active');
+            credentialsOverlay.classList.remove('active');
+
+            // Reset forgot password state
+            forgotPasswordIntro.style.display = 'block';
+            questionForm.style.display = 'none';
+            currentQuestion = 0;
+            if (timer) clearInterval(timer);
+            answerInput.value = '';
+        });
+
+        closeForgotPasswordPopup.addEventListener('click', function() {
+            forgotPasswordOverlay.classList.remove('active');
+            if (timer) clearInterval(timer); // Clear timer if popup is closed
+            answerInput.value = '';
+        });
+
+        // Redirect from Forgot Password to Create Account
+        forgotToCreateAccount.addEventListener('click', function(event) {
+            event.preventDefault();
+            forgotPasswordOverlay.classList.remove('active'); // Close forgot password popup
+            registrationOverlay.classList.add('active');     // Open registration popup
+        });
+
+        startQuestionsBtn.addEventListener('click', function() {
+            forgotPasswordIntro.style.display = 'none';
+            questionForm.style.display = 'block';
+            startQuestion();
+        });
+
+        function startQuestion() {
+            if (currentQuestion < questions.length) {
+                questionText.textContent = questions[currentQuestion].question;
+                answerInput.value = '';
+                timerDisplay.textContent = '30';
+                if (timer) clearInterval(timer); // Clear any existing timer
+
+                let timeLeft = 30;
+                timer = setInterval(() => {
+                    timeLeft--;
+                    timerDisplay.textContent = timeLeft;
+                    if (timeLeft <= 0) {
+                        clearInterval(timer);
+                        alert('You failed! Time\'s up. Please retry.');
+                        resetForgotPasswordFlow();
+                    }
+                }, 1000);
+            } else {
+                // All questions answered successfully
+                forgotPasswordOverlay.classList.remove('active'); // Close forgot password popup
+                credentialsOverlay.classList.add('active'); // Show credentials popup
+            }
+        }
+
+        questionForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            clearInterval(timer); // Stop the timer
+
+            const userAnswer = answerInput.value.trim().toLowerCase();
+            const correctAnswer = questions[currentQuestion].answer.toLowerCase();
+
+            if (userAnswer === correctAnswer) {
+                currentQuestion++;
+                if (currentQuestion < questions.length) {
+                    startQuestion(); // Next question
+                } else {
+                    // All questions answered correctly
+                    forgotPasswordOverlay.classList.remove('active');
+                    credentialsOverlay.classList.add('active');
+                    // Set the credentials to display
+                    displayEmail.textContent = 'sk@shubham.gov.in';
+                    displayPassword.textContent = 'securepassword';
+                }
+            } else {
+                alert('Incorrect answer. Please retry.');
+                resetForgotPasswordFlow();
+            }
+        });
+
+        function resetForgotPasswordFlow() {
+            forgotPasswordIntro.style.display = 'block';
+            questionForm.style.display = 'none';
+            currentQuestion = 0;
+            if (timer) clearInterval(timer);
+            answerInput.value = '';
+        }
+
+        // --- Credentials Display Popup Logic ---
+        closeCredentialsPopup.addEventListener('click', function() {
+            credentialsOverlay.classList.remove('active');
+            revealedCredentials.style.display = 'none'; // Hide credentials
+            showCredentialsBtn.style.display = 'block'; // Show "Click Here to Reveal" button
+        });
+
+        credentialsOverlay.addEventListener('click', function(event) {
+            if (event.target === credentialsOverlay) {
+                credentialsOverlay.classList.remove('active');
+                revealedCredentials.style.display = 'none';
+                showCredentialsBtn.style.display = 'block';
+            }
+        });
+
+        showCredentialsBtn.addEventListener('click', function() {
+            revealedCredentials.style.display = 'block';
+            showCredentialsBtn.style.display = 'none'; // Hide this button
+        });
+
+        goToLoginWithCredentials.addEventListener('click', function() {
+            // Auto-fill login form and redirect to login page
+            document.getElementById('email').value = 'sk@shubham.gov.in';
+            document.getElementById('password').value = 'securepassword';
+            credentialsOverlay.classList.remove('active'); // Close credentials popup
+            // No need to redirect if already on login page, just close popup
+            // If this was a separate page, we'd do window.location.href to login page
         });
     </script>
 
