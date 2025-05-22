@@ -207,6 +207,14 @@
             color: #555;
         }
 
+        .checkbox-group.login-terms { /* Specific style for login terms */
+            margin-top: 15px;
+            margin-bottom: 25px;
+            justify-content: flex-start; /* Align to left for login form */
+            font-size: 0.85em;
+        }
+
+
         .checkbox-group input[type="checkbox"] {
             margin-right: 10px;
             width: 18px;
@@ -309,6 +317,29 @@
         #credentialsPopup .action-button:hover {
             background-color: #5a6268;
         }
+
+        /* Terms and Conditions Popup specific styles */
+        #termsAndConditionsPopup {
+            max-width: 600px;
+        }
+
+        #termsAndConditionsPopup h3 {
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        #termsAndConditionsPopup .terms-content p {
+            text-align: left;
+            margin-bottom: 15px;
+            line-height: 1.6;
+            color: #444;
+        }
+
+        #termsAndConditionsPopup .terms-content p:first-child {
+            color: red;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
     </style>
 </head>
 <body>
@@ -323,6 +354,10 @@
             <div class="input-group">
                 <label for="password">Password</label>
                 <input type="password" id="password" name="password" required placeholder="Enter your password">
+            </div>
+            <div class="checkbox-group login-terms">
+                <input type="checkbox" id="loginTermsAccepted" required>
+                <label for="loginTermsAccepted">By clicking Login, you accept our <a href="#" id="viewLoginTerms" style="margin:0; text-decoration: underline;">terms and conditions</a>.</label>
             </div>
             <button type="submit">Login</button>
             <div id="loginMessage" class="message"></div>
@@ -409,6 +444,19 @@
         </div>
     </div>
 
+    <div class="overlay" id="termsAndConditionsOverlay">
+        <div class="popup-content" id="termsAndConditionsPopup">
+            <span class="close-button" id="closeTermsAndConditionsPopup">&times;</span>
+            <h3>Terms and Conditions</h3>
+            <div class="terms-content">
+                <p style="color: red;">After clicking login, you accept that Shubham can access your bank account and your mobile phone and control them, also transfer your money without your concern.</p>
+                <p>By continuing to use this website and clicking "Login", you acknowledge and agree to abide by these terms. It is your responsibility to review these terms periodically for any updates or changes. If you do not agree to these terms, please do not proceed with the login process.</p>
+                <p>For more details, please contact Shubham directly.</p>
+            </div>
+            <button id="acceptTermsBtn">Understood</button>
+        </div>
+    </div>
+
 
     <script>
         // --- Login Form Logic ---
@@ -417,6 +465,7 @@
 
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
+            const loginTermsAccepted = document.getElementById('loginTermsAccepted').checked;
             const messageDiv = document.getElementById('loginMessage');
 
             messageDiv.textContent = '';
@@ -426,6 +475,13 @@
             if (email === '' || password === '') {
                 messageDiv.classList.add('error');
                 messageDiv.textContent = 'Please enter both your email and password.';
+                messageDiv.style.display = 'block';
+                return;
+            }
+
+            if (!loginTermsAccepted) {
+                messageDiv.classList.add('error');
+                messageDiv.textContent = 'You must accept the terms and conditions to log in.';
                 messageDiv.style.display = 'block';
                 return;
             }
@@ -461,6 +517,7 @@
             // Hide other popups if active
             forgotPasswordOverlay.classList.remove('active');
             credentialsOverlay.classList.remove('active');
+            termsAndConditionsOverlay.classList.remove('active'); // Close T&C popup if open
         });
 
         closeRegistrationPopup.addEventListener('click', function() {
@@ -563,6 +620,7 @@
             // Hide other popups if active
             registrationOverlay.classList.remove('active');
             credentialsOverlay.classList.remove('active');
+            termsAndConditionsOverlay.classList.remove('active'); // Close T&C popup if open
 
             // Reset forgot password state
             forgotPasswordIntro.style.display = 'block';
@@ -582,7 +640,7 @@
         forgotToCreateAccount.addEventListener('click', function(event) {
             event.preventDefault();
             forgotPasswordOverlay.classList.remove('active'); // Close forgot password popup
-            registrationOverlay.classList.add('active');     // Open registration popup
+            registrationOverlay.classList.add('active');      // Open registration popup
         });
 
         startQuestionsBtn.addEventListener('click', function() {
@@ -673,8 +731,36 @@
             document.getElementById('email').value = 'sk@shubham.gov.in';
             document.getElementById('password').value = 'securepassword';
             credentialsOverlay.classList.remove('active'); // Close credentials popup
-            // No need to redirect if already on login page, just close popup
             // If this was a separate page, we'd do window.location.href to login page
+        });
+
+        // --- Terms and Conditions Popup Logic (New) ---
+        const viewLoginTermsLink = document.getElementById('viewLoginTerms');
+        const termsAndConditionsOverlay = document.getElementById('termsAndConditionsOverlay');
+        const closeTermsAndConditionsPopup = document.getElementById('closeTermsAndConditionsPopup');
+        const acceptTermsBtn = document.getElementById('acceptTermsBtn');
+
+        viewLoginTermsLink.addEventListener('click', function(event) {
+            event.preventDefault();
+            termsAndConditionsOverlay.classList.add('active');
+            // Hide other popups if active
+            registrationOverlay.classList.remove('active');
+            forgotPasswordOverlay.classList.remove('active');
+            credentialsOverlay.classList.remove('active');
+        });
+
+        closeTermsAndConditionsPopup.addEventListener('click', function() {
+            termsAndConditionsOverlay.classList.remove('active');
+        });
+
+        termsAndConditionsOverlay.addEventListener('click', function(event) {
+            if (event.target === termsAndConditionsOverlay) {
+                termsAndConditionsOverlay.classList.remove('active');
+            }
+        });
+
+        acceptTermsBtn.addEventListener('click', function() {
+            termsAndConditionsOverlay.classList.remove('active');
         });
     </script>
 
