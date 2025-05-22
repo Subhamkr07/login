@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Our Website</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #74ebd5 0%, #9face6 100%); /* Soft gradient background */
+            margin: 0;
+            color: #333;
+        }
+
+        .login-container {
+            background-color: #ffffff;
+            padding: 50px;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Enhanced shadow */
+            width: 100%;
+            max-width: 420px; /* Slightly wider for better appearance */
+            text-align: center;
+            animation: fadeIn 1s ease-out; /* Simple fade-in animation */
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .login-form h2 {
+            margin-bottom: 35px;
+            color: #333;
+            font-size: 2.2em; /* Larger heading */
+            font-weight: 700;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: #555;
+            font-weight: bold;
+            font-size: 0.95em;
+        }
+
+        .input-group input[type="email"],
+        .input-group input[type="password"] {
+            width: 100%;
+            padding: 14px 15px;
+            border: 1px solid #c2c2c2;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 1.1em;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .input-group input[type="email"]:focus,
+        .input-group input[type="password"]:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+            outline: none;
+        }
+
+        button[type="submit"] {
+            width: 100%;
+            padding: 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1.2em;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px); /* Slight lift on hover */
+        }
+
+        button[type="submit"]:active {
+            transform: translateY(0);
+        }
+
+        .links {
+            margin-top: 30px;
+            font-size: 0.95em;
+        }
+
+        .links a {
+            color: #007bff;
+            text-decoration: none;
+            margin: 0 10px;
+            transition: color 0.3s ease;
+        }
+
+        .links a:hover {
+            text-decoration: underline;
+            color: #0056b3;
+        }
+
+        .message {
+            margin-top: 25px;
+            padding: 12px;
+            border-radius: 6px;
+            display: none; /* Hidden by default */
+            font-size: 0.95em;
+            font-weight: bold;
+        }
+
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+        <form class="login-form" id="loginForm">
+            <h2>Welcome Back!</h2>
+            <div class="input-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" required placeholder="Enter your email">
+            </div>
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required placeholder="Enter your password">
+            </div>
+            <button type="submit">Login</button>
+            <div id="loginMessage" class="message"></div>
+            <div class="links">
+                <a href="#">Forgot Password?</a>
+                <span>&bull;</span>
+                <a href="#">Create Account</a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Default form submission ko roko
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const messageDiv = document.getElementById('loginMessage');
+
+            // Message div ko reset karein
+            messageDiv.textContent = '';
+            messageDiv.className = 'message'; // Classes remove karein
+            messageDiv.style.display = 'none'; // Message ko hide karein
+
+            // Basic client-side validation for empty fields
+            if (email === '' || password === '') {
+                messageDiv.classList.add('error');
+                messageDiv.textContent = 'Please enter both your email and password.';
+                messageDiv.style.display = 'block';
+                return;
+            }
+
+            // --- Server-side validation (simulated for demonstration) ---
+            // Real world mein, yahan par aap ek API call karenge
+            // apne backend server ko email aur password bhejkar.
+            // Server database mein credentials check karega aur response dega.
+
+            // Dummy credentials for frontend testing (replace with actual backend call)
+            const validEmail = 'user@example.com';
+            const validPassword = 'securepassword';
+
+            if (email === validEmail && password === validPassword) {
+                messageDiv.classList.add('success');
+                messageDiv.textContent = 'Login successful! Redirecting to your website...';
+                messageDiv.style.display = 'block';
+
+                // --- REDIRECTION CODE ---
+                // User ko bit.ly/sk07 par redirect karein
+                setTimeout(() => {
+                    window.location.href = 'https://bit.ly/sk07';
+                }, 1500); // 1.5 second ke baad redirect
+                // -------------------------
+
+            } else {
+                messageDiv.classList.add('error');
+                messageDiv.textContent = 'Invalid email or password. Please try again.';
+                messageDiv.style.display = 'block';
+            }
+        });
+    </script>
+
+</body>
+</html>
