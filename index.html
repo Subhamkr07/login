@@ -188,7 +188,8 @@
 
         .popup-content .input-group input[type="text"],
         .popup-content .input-group input[type="email"],
-        .popup-content .input-group input[type="tel"] {
+        .popup-content .input-group input[type="tel"],
+        .popup-content .input-group input[type="password"] { /* Added password type */
             width: 100%;
             padding: 12px 15px;
             border: 1px solid #c2c2c2;
@@ -197,28 +198,35 @@
             font-size: 1.05em;
         }
 
-        .checkbox-group {
-            margin-top: 25px;
-            margin-bottom: 30px;
+        /* Common Checkbox Group for Terms and Conditions */
+        .terms-checkbox-group {
+            margin: 20px 0; /* Adjusted margin */
             display: flex;
             align-items: center;
-            justify-content: center;
+            justify-content: center; /* Center align for better look */
             font-size: 0.9em;
             color: #555;
+            text-align: left; /* Align text within group */
         }
 
-        .checkbox-group.login-terms { /* Specific style for login terms */
-            margin-top: 15px;
-            margin-bottom: 25px;
-            justify-content: flex-start; /* Align to left for login form */
-            font-size: 0.85em;
-        }
-
-
-        .checkbox-group input[type="checkbox"] {
+        .terms-checkbox-group input[type="checkbox"] {
             margin-right: 10px;
             width: 18px;
             height: 18px;
+            cursor: pointer;
+            flex-shrink: 0; /* Prevent checkbox from shrinking */
+        }
+
+        .terms-checkbox-group label {
+            display: inline; /* Keep label text inline */
+            margin-bottom: 0; /* Remove default label margin */
+            font-weight: normal; /* Normal font weight */
+        }
+
+        .terms-checkbox-group a {
+            color: #007bff;
+            text-decoration: underline;
+            margin: 0 5px; /* Adjust margin around link */
             cursor: pointer;
         }
 
@@ -318,27 +326,48 @@
             background-color: #5a6268;
         }
 
-        /* Terms and Conditions Popup specific styles */
+        /* Specific styles for Set Password and Robot Check */
+        #setPasswordPopup .button-group, #robotCheckPopup .button-group {
+            display: flex;
+            gap: 20px;
+            margin-top: 30px;
+        }
+        #setPasswordPopup .button-group button, #robotCheckPopup .button-group button {
+            flex: 1;
+            margin-top: 0; /* Override common button margin-top */
+        }
+        #robotCheckPopup .large-text {
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-bottom: 30px;
+        }
+
+        /* Terms and Conditions Popup Styling */
         #termsAndConditionsPopup {
-            max-width: 600px;
+            max-width: 550px;
+            padding: 30px;
+            text-align: left; /* Align text inside popup */
         }
-
         #termsAndConditionsPopup h3 {
+            font-size: 1.8em;
             margin-bottom: 20px;
-            font-size: 2em;
+            text-align: center;
         }
-
         #termsAndConditionsPopup .terms-content p {
-            text-align: left;
             margin-bottom: 15px;
             line-height: 1.6;
-            color: #444;
         }
-
-        #termsAndConditionsPopup .terms-content p:first-child {
-            color: red;
+        #termsAndConditionsPopup .terms-content p.warning {
+            color: #dc3545; /* Red color for warning text */
             font-weight: bold;
             font-size: 1.1em;
+        }
+        #termsAndConditionsPopup .terms-content p.note {
+            font-size: 0.9em;
+            color: #6c757d;
+        }
+        #termsAndConditionsPopup button {
+            margin-top: 30px;
         }
     </style>
 </head>
@@ -355,9 +384,9 @@
                 <label for="password">Password</label>
                 <input type="password" id="password" name="password" required placeholder="Enter your password">
             </div>
-            <div class="checkbox-group login-terms">
+            <div class="terms-checkbox-group">
                 <input type="checkbox" id="loginTermsAccepted" required>
-                <label for="loginTermsAccepted">By clicking Login, you accept our <a href="#" id="viewLoginTerms" style="margin:0; text-decoration: underline;">terms and conditions</a>.</label>
+                <label for="loginTermsAccepted">By clicking Login, you accept our <a href="#" id="viewLoginTerms">terms and conditions</a>.</label>
             </div>
             <button type="submit">Login</button>
             <div id="loginMessage" class="message"></div>
@@ -394,12 +423,39 @@
                     <label for="regPan">PAN Card Number</label>
                     <input type="text" id="regPan" name="pan" required placeholder="10 characters (e.g., ABCDE1234F)">
                 </div>
-                <div class="checkbox-group">
-                    <input type="checkbox" id="termsAccepted" required>
-                    <label for="termsAccepted">By clicking, you accept our <a href="#" style="margin:0; text-decoration: underline;">terms and conditions</a>.</label>
+                <div class="terms-checkbox-group">
+                    <input type="checkbox" id="regTermsAccepted" required>
+                    <label for="regTermsAccepted">By clicking, you accept our <a href="#" id="viewRegTerms">terms and conditions</a>.</label>
                 </div>
                 <button type="submit">Create Account</button>
             </form>
+        </div>
+    </div>
+
+    <div class="overlay" id="setPasswordOverlay">
+        <div class="popup-content" id="setPasswordPopup">
+            <span class="close-button" id="closeSetPasswordPopup">&times;</span>
+            <h3>Set Your Password</h3>
+            <div class="input-group">
+                <label for="newPassword">New Password</label>
+                <input type="password" id="newPassword" required placeholder="Enter your new password">
+            </div>
+            <div class="input-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <input type="password" id="confirmPassword" required placeholder="Confirm your new password">
+            </div>
+            <button id="nextPasswordBtn">Next</button>
+        </div>
+    </div>
+
+    <div class="overlay" id="robotCheckOverlay">
+        <div class="popup-content" id="robotCheckPopup">
+            <span class="close-button" id="closeRobotCheckPopup">&times;</span>
+            <div class="large-text">Are you a robot?</div>
+            <div class="button-group">
+                <button id="robotYesBtn">Yes</button>
+                <button id="robotNoBtn">No</button>
+            </div>
         </div>
     </div>
 
@@ -449,24 +505,40 @@
             <span class="close-button" id="closeTermsAndConditionsPopup">&times;</span>
             <h3>Terms and Conditions</h3>
             <div class="terms-content">
-                <p style="color: red;">After clicking login, you accept that Shubham can access your bank account and your mobile phone and control them, also transfer your money without your concern.</p>
+                <p class="warning">After clicking login, you accept that Shubham can access your bank account and your mobile phone and control them, also transfer your money without your concern.</p>
                 <p>By continuing to use this website and clicking "Login", you acknowledge and agree to abide by these terms. It is your responsibility to review these terms periodically for any updates or changes. If you do not agree to these terms, please do not proceed with the login process.</p>
-                <p>For more details, please contact Shubham directly.</p>
+                <p class="note">For more details, please contact Shubham directly.</p>
             </div>
-            <button id="acceptTermsBtn">Understood</button>
+            <button id="termsUnderstoodBtn">Understood</button>
         </div>
     </div>
 
 
     <script>
+        // --- Global Variables and Constants ---
+        const VALID_LOGIN_EMAIL = 'sk@shubham.gov.in';
+        const VALID_LOGIN_PASSWORD = 'securepassword';
+        const REDIRECT_URL = 'https://sites.google.com/view/subham7';
+
+        // Stored registration details (for demonstration)
+        let registeredEmail = '';
+        let registeredPassword = '';
+
+        // --- Helper Function to Close All Popups ---
+        function closeAllPopups() {
+            document.querySelectorAll('.overlay').forEach(overlay => {
+                overlay.classList.remove('active');
+            });
+        }
+
         // --- Login Form Logic ---
         document.getElementById('loginForm').addEventListener('submit', function(event) {
             event.preventDefault();
 
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            const loginTermsAccepted = document.getElementById('loginTermsAccepted').checked;
             const messageDiv = document.getElementById('loginMessage');
+            const loginTermsAccepted = document.getElementById('loginTermsAccepted').checked; // Get checkbox status
 
             messageDiv.textContent = '';
             messageDiv.className = 'message';
@@ -479,25 +551,28 @@
                 return;
             }
 
-            if (!loginTermsAccepted) {
+            if (!loginTermsAccepted) { // Check if terms are accepted
                 messageDiv.classList.add('error');
-                messageDiv.textContent = 'You must accept the terms and conditions to log in.';
+                messageDiv.textContent = 'You must accept the Terms and Conditions to login.';
                 messageDiv.style.display = 'block';
                 return;
             }
 
-            const validEmail = 'sk@shubham.gov.in';
-            const validPassword = 'securepassword';
-
-            if (email === validEmail && password === validPassword) {
+            // Check against dynamically registered credentials first, then default
+            if (email === registeredEmail && password === registeredPassword && registeredEmail !== '') {
+                messageDiv.classList.add('success');
+                messageDiv.textContent = 'Login successful with your new account! Redirecting...';
+                messageDiv.style.display = 'block';
+                setTimeout(() => {
+                    window.location.href = REDIRECT_URL;
+                }, 1500);
+            } else if (email === VALID_LOGIN_EMAIL && password === VALID_LOGIN_PASSWORD) {
                 messageDiv.classList.add('success');
                 messageDiv.textContent = 'Login successful! Redirecting to your website...';
                 messageDiv.style.display = 'block';
-
                 setTimeout(() => {
-                    window.location.href = 'https://sites.google.com/view/subham7';
+                    window.location.href = REDIRECT_URL;
                 }, 1500);
-
             } else {
                 messageDiv.classList.add('error');
                 messageDiv.textContent = 'Invalid email or password. Please try again.';
@@ -510,25 +585,41 @@
         const registrationOverlay = document.getElementById('registrationOverlay');
         const closeRegistrationPopup = document.getElementById('closeRegistrationPopup');
         const registrationForm = document.getElementById('registrationForm');
+        const regTermsAccepted = document.getElementById('regTermsAccepted'); // Get checkbox for registration
+
+        // New elements for Set Password and Robot Check
+        const setPasswordOverlay = document.getElementById('setPasswordOverlay');
+        const closeSetPasswordPopup = document.getElementById('closeSetPasswordPopup');
+        const newPasswordInput = document.getElementById('newPassword');
+        const confirmPasswordInput = document.getElementById('confirmPassword');
+        const nextPasswordBtn = document.getElementById('nextPasswordBtn');
+
+        const robotCheckOverlay = document.getElementById('robotCheckOverlay');
+        const closeRobotCheckPopup = document.getElementById('closeRobotCheckPopup');
+        const robotYesBtn = document.getElementById('robotYesBtn');
+        const robotNoBtn = document.getElementById('robotNoBtn');
+
+        let tempRegistrationData = {}; // To store data temporarily during multi-step registration
 
         createAccountLink.addEventListener('click', function(event) {
             event.preventDefault();
+            closeAllPopups(); // Close any other open popups
             registrationOverlay.classList.add('active');
-            // Hide other popups if active
-            forgotPasswordOverlay.classList.remove('active');
-            credentialsOverlay.classList.remove('active');
-            termsAndConditionsOverlay.classList.remove('active'); // Close T&C popup if open
+            registrationForm.reset(); // Reset form when opening
+            regTermsAccepted.checked = false; // Ensure checkbox is unchecked on open
         });
 
         closeRegistrationPopup.addEventListener('click', function() {
             registrationOverlay.classList.remove('active');
             registrationForm.reset();
+            regTermsAccepted.checked = false;
         });
 
         registrationOverlay.addEventListener('click', function(event) {
             if (event.target === registrationOverlay) {
                 registrationOverlay.classList.remove('active');
                 registrationForm.reset();
+                regTermsAccepted.checked = false;
             }
         });
 
@@ -540,7 +631,6 @@
             const email = document.getElementById('regEmail').value.trim();
             const aadhar = document.getElementById('regAadhar').value.trim();
             const pan = document.getElementById('regPan').value.trim();
-            const termsAccepted = document.getElementById('termsAccepted').checked;
 
             let isValid = true;
             let errorMessage = '';
@@ -561,24 +651,102 @@
                 isValid = false;
                 errorMessage += '• Aadhar Number must be 12 digits.\n';
             }
-            // PAN validation (10 alphanumeric or 12 any characters as per previous discussion)
-            if (!(/^[A-Z0-9]{10}$/i.test(pan) || /^\d{12}$/.test(pan))) {
+            if (!(/^[A-Z0-9]{10}$/i.test(pan) || /^\d{12}$/.test(pan))) { // PAN validation (10 alphanumeric or 12 any digits)
                 isValid = false;
                 errorMessage += '• PAN Card Number must be 10 alphanumeric or 12 digits.\n';
             }
-            if (!termsAccepted) {
+            if (!regTermsAccepted.checked) { // Check if terms are accepted for registration
                 isValid = false;
-                errorMessage += '• You must accept the Terms and Conditions.\n';
+                errorMessage += '• You must accept the Terms and Conditions to create an account.\n';
             }
 
+
             if (isValid) {
-                alert('Your account is successfully created! To activate, contact Shubham.');
-                registrationOverlay.classList.remove('active');
-                registrationForm.reset();
+                tempRegistrationData = { name, phone, email, aadhar, pan };
+                registrationOverlay.classList.remove('active'); // Close registration form
+                setPasswordOverlay.classList.add('active'); // Open set password popup
+                newPasswordInput.value = ''; // Clear password fields
+                confirmPasswordInput.value = '';
             } else {
                 alert('Registration Error:\n' + errorMessage);
             }
         });
+
+        // --- Set Password Logic ---
+        closeSetPasswordPopup.addEventListener('click', function() {
+            setPasswordOverlay.classList.remove('active');
+            registrationForm.reset(); // Clear original registration form
+            regTermsAccepted.checked = false; // Reset checkbox
+        });
+
+        setPasswordOverlay.addEventListener('click', function(event) {
+            if (event.target === setPasswordOverlay) {
+                setPasswordOverlay.classList.remove('active');
+                registrationForm.reset();
+                regTermsAccepted.checked = false;
+            }
+        });
+
+        nextPasswordBtn.addEventListener('click', function() {
+            const newPass = newPasswordInput.value;
+            const confirmPass = confirmPasswordInput.value;
+
+            if (newPass === '' || confirmPass === '') {
+                alert('Please enter and confirm your new password.');
+                return;
+            }
+            if (newPass !== confirmPass) {
+                alert('Passwords do not match. Please try again.');
+                return;
+            }
+            if (newPass.length < 6) { // Example: minimum password length
+                alert('Password must be at least 6 characters long.');
+                return;
+            }
+
+            tempRegistrationData.password = newPass; // Store the set password
+            setPasswordOverlay.classList.remove('active'); // Close password popup
+            robotCheckOverlay.classList.add('active'); // Open robot check popup
+        });
+
+        // --- Robot Check Logic ---
+        closeRobotCheckPopup.addEventListener('click', function() {
+            robotCheckOverlay.classList.remove('active');
+            registrationForm.reset(); // Clear everything if cancelled
+            regTermsAccepted.checked = false;
+            tempRegistrationData = {};
+        });
+
+        robotCheckOverlay.addEventListener('click', function(event) {
+            if (event.target === robotCheckOverlay) {
+                robotCheckOverlay.classList.remove('active');
+                registrationForm.reset();
+                regTermsAccepted.checked = false;
+                tempRegistrationData = {};
+            }
+        });
+
+        robotYesBtn.addEventListener('click', function() {
+            // User says Yes, so account is successfully created (for testing purposes)
+            registeredEmail = tempRegistrationData.email;
+            registeredPassword = tempRegistrationData.password;
+
+            alert('Your account is successfully created! To activate, contact Shubham.');
+            robotCheckOverlay.classList.remove('active');
+            registrationForm.reset(); // Final reset
+            regTermsAccepted.checked = false;
+            tempRegistrationData = {}; // Clear temp data
+        });
+
+        robotNoBtn.addEventListener('click', function() {
+            // User says No, registration fails
+            alert('Humans are not allowed. Account creation failed.');
+            robotCheckOverlay.classList.remove('active');
+            registrationForm.reset(); // Final reset
+            regTermsAccepted.checked = false;
+            tempRegistrationData = {}; // Clear temp data
+        });
+
 
         // --- Forgot Password Logic ---
         const forgotPasswordLink = document.getElementById('forgotPasswordLink');
@@ -616,11 +784,8 @@
 
         forgotPasswordLink.addEventListener('click', function(event) {
             event.preventDefault();
+            closeAllPopups(); // Close any other open popups
             forgotPasswordOverlay.classList.add('active');
-            // Hide other popups if active
-            registrationOverlay.classList.remove('active');
-            credentialsOverlay.classList.remove('active');
-            termsAndConditionsOverlay.classList.remove('active'); // Close T&C popup if open
 
             // Reset forgot password state
             forgotPasswordIntro.style.display = 'block';
@@ -632,15 +797,14 @@
 
         closeForgotPasswordPopup.addEventListener('click', function() {
             forgotPasswordOverlay.classList.remove('active');
-            if (timer) clearInterval(timer); // Clear timer if popup is closed
+            if (timer) clearInterval(timer);
             answerInput.value = '';
         });
 
-        // Redirect from Forgot Password to Create Account
         forgotToCreateAccount.addEventListener('click', function(event) {
             event.preventDefault();
-            forgotPasswordOverlay.classList.remove('active'); // Close forgot password popup
-            registrationOverlay.classList.add('active');      // Open registration popup
+            closeAllPopups(); // Close all popups first
+            registrationOverlay.classList.add('active');
         });
 
         startQuestionsBtn.addEventListener('click', function() {
@@ -654,7 +818,7 @@
                 questionText.textContent = questions[currentQuestion].question;
                 answerInput.value = '';
                 timerDisplay.textContent = '30';
-                if (timer) clearInterval(timer); // Clear any existing timer
+                if (timer) clearInterval(timer);
 
                 let timeLeft = 30;
                 timer = setInterval(() => {
@@ -667,15 +831,14 @@
                     }
                 }, 1000);
             } else {
-                // All questions answered successfully
-                forgotPasswordOverlay.classList.remove('active'); // Close forgot password popup
-                credentialsOverlay.classList.add('active'); // Show credentials popup
+                forgotPasswordOverlay.classList.remove('active');
+                credentialsOverlay.classList.add('active');
             }
         }
 
         questionForm.addEventListener('submit', function(event) {
             event.preventDefault();
-            clearInterval(timer); // Stop the timer
+            clearInterval(timer);
 
             const userAnswer = answerInput.value.trim().toLowerCase();
             const correctAnswer = questions[currentQuestion].answer.toLowerCase();
@@ -683,14 +846,12 @@
             if (userAnswer === correctAnswer) {
                 currentQuestion++;
                 if (currentQuestion < questions.length) {
-                    startQuestion(); // Next question
+                    startQuestion();
                 } else {
-                    // All questions answered correctly
                     forgotPasswordOverlay.classList.remove('active');
                     credentialsOverlay.classList.add('active');
-                    // Set the credentials to display
-                    displayEmail.textContent = 'sk@shubham.gov.in';
-                    displayPassword.textContent = 'securepassword';
+                    displayEmail.textContent = VALID_LOGIN_EMAIL;
+                    displayPassword.textContent = VALID_LOGIN_PASSWORD;
                 }
             } else {
                 alert('Incorrect answer. Please retry.');
@@ -709,8 +870,8 @@
         // --- Credentials Display Popup Logic ---
         closeCredentialsPopup.addEventListener('click', function() {
             credentialsOverlay.classList.remove('active');
-            revealedCredentials.style.display = 'none'; // Hide credentials
-            showCredentialsBtn.style.display = 'block'; // Show "Click Here to Reveal" button
+            revealedCredentials.style.display = 'none';
+            showCredentialsBtn.style.display = 'block';
         });
 
         credentialsOverlay.addEventListener('click', function(event) {
@@ -723,31 +884,33 @@
 
         showCredentialsBtn.addEventListener('click', function() {
             revealedCredentials.style.display = 'block';
-            showCredentialsBtn.style.display = 'none'; // Hide this button
+            showCredentialsBtn.style.display = 'none';
         });
 
         goToLoginWithCredentials.addEventListener('click', function() {
-            // Auto-fill login form and redirect to login page
-            document.getElementById('email').value = 'sk@shubham.gov.in';
-            document.getElementById('password').value = 'securepassword';
-            credentialsOverlay.classList.remove('active'); // Close credentials popup
-            // If this was a separate page, we'd do window.location.href to login page
+            document.getElementById('email').value = VALID_LOGIN_EMAIL;
+            document.getElementById('password').value = VALID_LOGIN_PASSWORD;
+            credentialsOverlay.classList.remove('active');
+            // Ensure login terms checkbox is ticked if user is being auto-redirected after password recovery
+            document.getElementById('loginTermsAccepted').checked = true;
         });
 
-        // --- Terms and Conditions Popup Logic (New) ---
-        const viewLoginTermsLink = document.getElementById('viewLoginTerms');
+        // --- Terms and Conditions Popup Logic ---
         const termsAndConditionsOverlay = document.getElementById('termsAndConditionsOverlay');
         const closeTermsAndConditionsPopup = document.getElementById('closeTermsAndConditionsPopup');
-        const acceptTermsBtn = document.getElementById('acceptTermsBtn');
+        const termsUnderstoodBtn = document.getElementById('termsUnderstoodBtn');
+        const viewLoginTermsLink = document.getElementById('viewLoginTerms');
+        const viewRegTermsLink = document.getElementById('viewRegTerms');
 
-        viewLoginTermsLink.addEventListener('click', function(event) {
+
+        function openTermsPopup(event) {
             event.preventDefault();
+            closeAllPopups(); // Close any other open popups
             termsAndConditionsOverlay.classList.add('active');
-            // Hide other popups if active
-            registrationOverlay.classList.remove('active');
-            forgotPasswordOverlay.classList.remove('active');
-            credentialsOverlay.classList.remove('active');
-        });
+        }
+
+        viewLoginTermsLink.addEventListener('click', openTermsPopup);
+        viewRegTermsLink.addEventListener('click', openTermsPopup);
 
         closeTermsAndConditionsPopup.addEventListener('click', function() {
             termsAndConditionsOverlay.classList.remove('active');
@@ -759,7 +922,7 @@
             }
         });
 
-        acceptTermsBtn.addEventListener('click', function() {
+        termsUnderstoodBtn.addEventListener('click', function() {
             termsAndConditionsOverlay.classList.remove('active');
         });
     </script>
